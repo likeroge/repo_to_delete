@@ -3,11 +3,14 @@ use std::sync::Arc;
 use eframe::egui;
 use sqlx::SqlitePool;
 
+use crate::app::AppData;
+
 pub mod about;
 // pub mod flights;
 // pub mod flights_table;
 pub mod flights;
 pub mod home;
+pub mod users;
 
 #[derive(Default)]
 pub enum Scene {
@@ -16,10 +19,11 @@ pub enum Scene {
     About,
     // FlightsScreen(flights::FlightsForm),
     FlightsScreen,
+    UsersScreen,
 }
 
 impl Scene {
-    pub fn render(&mut self, ui: &mut egui::Ui, pool: Arc<SqlitePool>) {
+    pub fn render(&mut self, ui: &mut egui::Ui, pool: Arc<SqlitePool>, app_data: Arc<AppData>) {
         let next = match self {
             Scene::Home => {
                 home::render_home(ui);
@@ -31,7 +35,11 @@ impl Scene {
             }
             Scene::FlightsScreen => {
                 // tokio::spawn(flights::render_flights(ui, pool));
-                flights::render_flights(ui, pool);
+                flights::render_flights(ui, pool, app_data);
+                None
+            }
+            Scene::UsersScreen => {
+                users::render_users(ui);
                 None
             } // Scene::Flights(form) => {
               //     if flights::render_form(ui, form, pool) {

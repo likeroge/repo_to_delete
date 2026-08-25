@@ -21,6 +21,10 @@ impl<'a> Widget for NavigBar<'a> {
                 *self.0 = Scene::FlightsScreen;
             }
 
+            if ui.add(style::nav_button("USERS")).clicked() {
+                *self.0 = Scene::UsersScreen;
+            }
+
             if ui.add(style::nav_button("ABOUT")).clicked() {
                 *self.0 = Scene::About;
             }

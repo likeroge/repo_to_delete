@@ -1,14 +1,15 @@
-use std::{os::windows::thread, sync::Arc};
+use std::sync::Arc;
 
 use eframe::egui::{self, Grid, Label, Ui};
 use sqlx::SqlitePool;
 
 use crate::{
-    repositories::{self, CrudRepoTrait, flights::FlightsRepository},
+    app::AppData,
+    repositories::{CrudRepoTrait, flights::FlightsRepository},
     style,
 };
 
-pub fn render_flights(ui: &mut Ui, pool: Arc<SqlitePool>) {
+pub fn render_flights(ui: &mut Ui, pool: Arc<SqlitePool>, app_data: Arc<AppData>) {
     ui.add_space(24.0);
     ui.vertical_centered(|ui| {
         ui.add(egui::Label::new(style::heading("All flights screen")));
@@ -22,10 +23,18 @@ pub fn render_flights(ui: &mut Ui, pool: Arc<SqlitePool>) {
         ui.strong("right");
     });
     let repo = FlightsRepository::new(pool);
-    draw_flights_table(repo, ui);
+    // draw_flights_table(repo, ui);
 
-    // let handle = tokio::runtime::Handle::current();
+    let handle = tokio::runtime::Handle::current();
     // handle.spawn(draw_flights_table(repo, ui));
+
+    handle.spawn(async move {
+        let flights = repo.get_all().await.unwrap();
+        println!("Tokio spawn");
+        println!("{:?}", flights);
+
+        // app_data.flights = flights;
+    });
 
     // draw_flights_table(repo, ui).await;
 

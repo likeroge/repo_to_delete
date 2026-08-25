@@ -1,17 +1,32 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Arc;
+use std::sync::{
+    Arc,
+    mpsc::{self, Receiver, Sender},
+};
 
 use eframe::{NativeOptions, egui::vec2, run_native};
 
 use crate::{app::Appl, db::init_db};
+
 mod app;
 mod components;
 mod db;
 mod repositories;
 mod scenes;
+mod study;
 mod style;
 
+// pub struct Aaa {
+// ch: (Sender<String>, Receiver<String>),
+// }
+
+// fn main() {
+// let (tx, rx) = mpsc::channel();
+// let ap = Aaa { ch: (tx, rx) };
+// study::study_fn_main();
+// }
+//
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().ok();
