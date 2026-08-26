@@ -5,9 +5,9 @@ use crate::{scenes::Scene, style};
 pub struct NavigBar<'a>(pub &'a mut Scene);
 
 impl<'a> NavigBar<'a> {
-    pub fn new(scene: &'a mut Scene) -> Self {
-        Self(scene)
-    }
+    // pub fn new(scene: &'a mut Scene) -> Self {
+    // Self(scene)
+    // }
 }
 
 impl<'a> Widget for NavigBar<'a> {
@@ -32,6 +32,12 @@ impl<'a> Widget for NavigBar<'a> {
             if ui.add(style::nav_button("EXIT")).clicked() {
                 ui.ctx()
                     .send_viewport_cmd(eframe::egui::ViewportCommand::Close);
+            }
+
+            if *self.0 == Scene::FlightsScreen(crate::scenes::FlightScreenStatus::Loaded) {
+                if ui.add(style::nav_button("Flight_FORM")).clicked() {
+                    *self.0 = Scene::FlightFormScreen;
+                }
             }
         })
         .response

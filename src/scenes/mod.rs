@@ -16,6 +16,7 @@ use crate::{
 
 pub mod about;
 
+pub mod flight_form;
 pub mod flights;
 pub mod home;
 pub mod users;
@@ -26,13 +27,14 @@ pub enum FlightScreenStatus {
     Loaded,
 }
 
-#[derive(Default)]
+#[derive(Default, PartialEq, PartialOrd)]
 pub enum Scene {
     #[default]
     Home,
     About,
     // FlightsScreen(flights::FlightsForm),
     FlightsScreen(FlightScreenStatus),
+    FlightFormScreen,
     UsersScreen,
 }
 
@@ -75,23 +77,16 @@ impl Scene {
                     }
                 }
 
-                // flights::render_flights(ui, pool);
                 None
             }
             Scene::UsersScreen => {
                 users::render_users(ui);
                 None
-            } // Scene::Flights(form) => {
-              //     if flights::render_form(ui, form, pool) {
-              //         Some(Scene::FlightsTable(flights_table::FlightsTable::default()))
-              //     } else {
-              //         None
-              //     }
-              // }
-              // Scene::FlightsTable(table) => {
-              //     flights_table::render_table(ui, table, pool);
-              //     None
-              // }
+            }
+            Scene::FlightFormScreen => {
+                flight_form::render_flight_form(ui);
+                None
+            }
         };
 
         if let Some(next) = next {

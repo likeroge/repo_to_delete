@@ -1,4 +1,4 @@
-use eframe::egui::{self, Grid, Label, Ui};
+use eframe::egui::{self, Label, Ui};
 
 use crate::{repositories::flights::Flight, style};
 
@@ -9,14 +9,24 @@ pub fn render_flights(ui: &mut Ui, flights: &Vec<Flight>) {
     });
 
     ui.horizontal(|ui| {
-        ui.strong("left");
+        ui.strong("FLIGHT_NUMBER");
         ui.separator();
-        ui.strong("center");
+        ui.strong("DEPARTURE");
         ui.separator();
-        ui.strong("right");
+        ui.strong("ARRIVAL");
 
-        ui.label(flights.len().to_string());
+        // ui.label(flights.len().to_string());
 
-        ui.label(&flights[0].flight_number)
+        // ui.label(&flights[0].flight_number)
     });
+
+    for flight in flights {
+        ui.horizontal(|ui| {
+            ui.label(&flight.flight_number);
+            ui.separator();
+            ui.label(&flight.dep);
+            ui.separator();
+            ui.label(&flight.arr);
+        });
+    }
 }
