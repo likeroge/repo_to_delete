@@ -11,9 +11,9 @@ pub struct AppData {
 }
 
 pub struct Appl {
-    current_scene: Scene,
-    pool: Arc<SqlitePool>,
-    app_data: Arc<AppData>,
+    pub current_scene: Scene,
+    pub pool: Arc<SqlitePool>,
+    pub app_data: AppData,
 }
 
 impl Appl {
@@ -21,7 +21,7 @@ impl Appl {
         Self {
             current_scene: Scene::Home,
             pool,
-            app_data: Arc::new(AppData::default()),
+            app_data: AppData::default(),
         }
     }
 }
@@ -29,13 +29,17 @@ impl Appl {
 impl App for Appl {
     fn update(&mut self, ctx: &eframe::egui::Context, frame: &mut eframe::Frame) {
         CentralPanel::default().show(ctx, |ui| {
-            let nav_bar = NavigBar::new(&mut self.current_scene);
+            let nav_bar = {
+                let scene = &mut self.current_scene;
+                NavigBar(scene)
+            };
             ui.add(nav_bar);
             let pool = self.pool.clone();
-            let app_data = self.app_data.clone();
+
             // handle.spawn_blocking(self.current_scene.render(ui, pool));
             // handle.block_on(self.current_scene.render(ui, pool));
-            self.current_scene.render(ui, pool, app_data);
+
+            self.current_scene.render(ui, pool, &mut self.app_data);
         });
     }
 }

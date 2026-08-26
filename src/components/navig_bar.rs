@@ -2,7 +2,7 @@ use eframe::egui::Widget;
 
 use crate::{scenes::Scene, style};
 
-pub struct NavigBar<'a>(&'a mut Scene);
+pub struct NavigBar<'a>(pub &'a mut Scene);
 
 impl<'a> NavigBar<'a> {
     pub fn new(scene: &'a mut Scene) -> Self {
@@ -18,7 +18,7 @@ impl<'a> Widget for NavigBar<'a> {
             }
 
             if ui.add(style::nav_button("FLIGHTS")).clicked() {
-                *self.0 = Scene::FlightsScreen;
+                *self.0 = Scene::FlightsScreen(crate::scenes::FlightScreenStatus::NotLoaded);
             }
 
             if ui.add(style::nav_button("USERS")).clicked() {
