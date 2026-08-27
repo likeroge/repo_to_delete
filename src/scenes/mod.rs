@@ -8,6 +8,7 @@ use sqlx::SqlitePool;
 
 use crate::{
     app::{self, AppData},
+    models::flight_dto::FlightDTO,
     repositories::{
         CrudRepoTrait,
         flights::{Flight, FlightsRepository},
@@ -69,8 +70,6 @@ impl Scene {
                         app_data.flights = res;
                     }
                     FlightScreenStatus::Loaded => {
-                        ui.label("Loaded data scene");
-
                         if !app_data.flights.is_empty() {
                             flights::render_flights(ui, &app_data.flights);
                         }
@@ -84,7 +83,9 @@ impl Scene {
                 None
             }
             Scene::FlightFormScreen => {
-                flight_form::render_flight_form(ui);
+                println!("Flight form");
+                let mut new_flight = FlightDTO::default();
+                flight_form::render_flight_form(ui, &mut new_flight);
                 None
             }
         };

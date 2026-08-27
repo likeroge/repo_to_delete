@@ -12,6 +12,7 @@ use crate::{app::Appl, db::init_db};
 mod app;
 mod components;
 mod db;
+mod models;
 mod repositories;
 mod scenes;
 mod study;
