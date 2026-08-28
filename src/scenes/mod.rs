@@ -84,8 +84,7 @@ impl Scene {
             }
             Scene::FlightFormScreen => {
                 println!("Flight form");
-                let mut new_flight = FlightDTO::default();
-                flight_form::render_flight_form(ui, &mut new_flight);
+                flight_form::render_flight_form(ui, &mut app_data.new_flight_form);
                 None
             }
         };

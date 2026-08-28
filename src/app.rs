@@ -3,11 +3,15 @@ use std::sync::Arc;
 use eframe::{App, egui::CentralPanel};
 use sqlx::SqlitePool;
 
-use crate::{components::navig_bar::NavigBar, repositories::flights::Flight, scenes::Scene};
+use crate::{
+    components::navig_bar::NavigBar, models::flight_dto::FlightDTO, repositories::flights::Flight,
+    scenes::Scene,
+};
 
 #[derive(Default, Debug)]
 pub struct AppData {
     pub flights: Vec<Flight>,
+    pub new_flight_form: FlightDTO,
 }
 
 pub struct Appl {
