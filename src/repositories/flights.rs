@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use sqlx::{FromRow, SqlitePool};
 
-use crate::repositories::CrudRepoTrait;
+use crate::{models::flight_dto::FlightDTO, repositories::CrudRepoTrait};
 
 #[derive(Debug, Clone, FromRow)]
 pub struct Flight {
@@ -12,7 +12,7 @@ pub struct Flight {
     pub dof: String,
     pub flight_number: String,
     pub tail: String,
-    pub pyld: i32,
+    pub pyld: String,
 }
 
 pub struct FlightsRepository {
@@ -24,7 +24,7 @@ impl CrudRepoTrait<Flight> for FlightsRepository {
         Self { pool }
     }
 
-    async fn create(&self, flight: &Flight) -> Result<Flight, sqlx::Error> {
+    async fn create(&self, flight: &FlightDTO) -> Result<Flight, sqlx::Error> {
         let id = sqlx::query(
             "INSERT INTO Flights (dep, arr, dof, flight_number, tail, pyld)
              VALUES (?, ?, ?, ?, ?, ?)",
@@ -34,14 +34,19 @@ impl CrudRepoTrait<Flight> for FlightsRepository {
         .bind(&flight.dof)
         .bind(&flight.flight_number)
         .bind(&flight.tail)
-        .bind(flight.pyld)
+        .bind(&flight.pyld)
         .execute(&*self.pool)
         .await?
         .last_insert_rowid();
 
         Ok(Flight {
+            dep: flight.dep.clone(),
             id,
-            ..flight.clone()
+            arr: flight.arr.clone(),
+            dof: flight.dof.clone(),
+            flight_number: flight.flight_number.clone(),
+            tail: flight.tail.clone(),
+            pyld: flight.pyld.clone(),
         })
     }
 
@@ -69,7 +74,7 @@ impl CrudRepoTrait<Flight> for FlightsRepository {
         .bind(&flight.dof)
         .bind(&flight.flight_number)
         .bind(&flight.tail)
-        .bind(flight.pyld)
+        .bind(&flight.pyld)
         .bind(flight.id)
         .execute(&*self.pool)
         .await?;
@@ -83,4 +88,6 @@ impl CrudRepoTrait<Flight> for FlightsRepository {
             .await?;
         Ok(())
     }
+
+    type Dto = FlightDTO;
 }

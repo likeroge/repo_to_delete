@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS Flights (
     dof           TEXT    NOT NULL,
     flight_number TEXT    NOT NULL,
     tail          TEXT    NOT NULL,
-    pyld          INTEGER NOT NULL
+    pyld          TEXT NOT NULL
 );

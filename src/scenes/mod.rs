@@ -83,8 +83,15 @@ impl Scene {
                 None
             }
             Scene::FlightFormScreen => {
-                println!("Flight form");
-                flight_form::render_flight_form(ui, &mut app_data.new_flight_form);
+                // println!("FLIGHT_FORM_SCREEN");
+                // println!("From scenes -> mod.rs : {}", app_data.current_err);
+                let repo = FlightsRepository::new(pool);
+                flight_form::render_flight_form(
+                    ui,
+                    &mut app_data.new_flight_form,
+                    &mut app_data.current_err,
+                    repo,
+                );
                 None
             }
         };

@@ -12,6 +12,7 @@ use crate::{
 pub struct AppData {
     pub flights: Vec<Flight>,
     pub new_flight_form: FlightDTO,
+    pub current_err: String,
 }
 
 pub struct Appl {
