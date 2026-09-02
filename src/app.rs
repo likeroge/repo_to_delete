@@ -45,7 +45,6 @@ impl Appl {
         Self {
             current_scene: Scene::Home,
             pool,
-            // app_data: AppData::default(),
             app_data: AppData::new(),
         }
     }

@@ -38,11 +38,11 @@ pub fn render_flight_form(
     ui.label(current_err.to_string());
 
     if ui.add(add_flight_button).clicked() {
-        let err_tx = err_tx.clone();
+        // let err_tx = err_tx.clone();
         match validate_flight_dto(new_flight) {
             Ok(()) => {
                 let flight_data = new_flight.clone();
-                // let err_tx = err_tx.clone();
+                let err_tx = err_tx.clone();
                 println!("inside tokio");
                 tokio::spawn(async move {
                     match repo.create(&flight_data).await {
