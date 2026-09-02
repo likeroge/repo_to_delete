@@ -1,4 +1,4 @@
-use eframe::egui::{self, Label, Ui};
+use eframe::egui::{self, Label, ScrollArea, Ui};
 
 use crate::{repositories::flights::Flight, style};
 
@@ -20,13 +20,15 @@ pub fn render_flights(ui: &mut Ui, flights: &Vec<Flight>) {
         // ui.label(&flights[0].flight_number)
     });
 
-    for flight in flights {
-        ui.horizontal(|ui| {
-            ui.label(&flight.flight_number);
-            ui.separator();
-            ui.label(&flight.dep);
-            ui.separator();
-            ui.label(&flight.arr);
-        });
-    }
+    ScrollArea::vertical().show(ui, |ui| {
+        for flight in flights {
+            ui.horizontal(|ui| {
+                ui.label(&flight.flight_number);
+                ui.separator();
+                ui.label(&flight.dep);
+                ui.separator();
+                ui.label(&flight.arr);
+            });
+        }
+    });
 }
