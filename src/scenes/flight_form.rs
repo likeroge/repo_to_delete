@@ -34,14 +34,10 @@ pub fn render_flight_form(
     ui.label("Payload");
     ui.text_edit_singleline(&mut new_flight.pyld);
 
-    let add_flight = style::nav_button("ADD FLIGHT");
+    let add_flight_button = style::nav_button("ADD FLIGHT");
     ui.label(current_err.to_string());
 
-    if ui.add(add_flight).clicked() {
-        // if let Ok(r) = err_rx.try_recv() {
-        // println!("{}", r)
-        // }
-
+    if ui.add(add_flight_button).clicked() {
         let err_tx = err_tx.clone();
         match validate_flight_dto(new_flight) {
             Ok(()) => {
@@ -52,12 +48,11 @@ pub fn render_flight_form(
                     match repo.create(&flight_data).await {
                         Ok(flight_in_db) => {
                             println!("{:?}", flight_in_db);
-                            err_tx.send(format!("Success")).unwrap();
-                            // *current_err = String::from("Success");
+                            err_tx.send("Success".to_string()).unwrap();
                         }
                         Err(e) => {
                             println!("{}", e);
-                            let _ = err_tx.send(format!("Error saving flight: {}", e)).unwrap();
+                            err_tx.send(format!("Error saving flight: {}", e)).unwrap();
                         }
                     }
                 });
@@ -67,12 +62,6 @@ pub fn render_flight_form(
             }
         };
 
-        // if let Ok(r) = err_rx.try_recv() {
-        //     *current_err = err_rx.recv().unwrap();
-        //     println!("{}", r)
-        // } else {
-        //     *current_err = err_rx.recv().unwrap();
-        // }
         *current_err = err_rx.recv().unwrap();
     }
 }
