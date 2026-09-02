@@ -1,4 +1,6 @@
-use eframe::egui::{self, Color32, RichText};
+use std::sync::mpsc::{Receiver, Sender};
+
+use eframe::egui::{self};
 
 use crate::{
     models::flight_dto::FlightDTO,
@@ -11,6 +13,8 @@ pub fn render_flight_form(
     new_flight: &mut FlightDTO,
     current_err: &mut String,
     repo: FlightsRepository,
+    err_tx: &mut Sender<String>,
+    err_rx: &mut Receiver<String>,
 ) {
     ui.add_space(24.0);
     ui.vertical_centered(|ui| {
@@ -32,33 +36,54 @@ pub fn render_flight_form(
 
     let add_flight = style::nav_button("ADD FLIGHT");
 
+    ui.label(current_err.to_string());
     if ui.add(add_flight).clicked() {
-        *current_err = String::new();
-        if new_flight.arr.is_empty()
-            || new_flight.dof.is_empty()
-            || new_flight.dep.is_empty()
-            || new_flight.pyld.is_empty()
-            || new_flight.flight_number.is_empty()
-            || new_flight.tail.is_empty()
-        {
-            println!("Wrong data");
-            println!("{}", *current_err);
-
-            if current_err.is_empty() {
-                *current_err = String::from("Please fill all fields");
-            }
-
-            // repo.create(new_flight)
+        if let Ok(r) = err_rx.try_recv() {
+            println!("{}", r)
         }
 
-        let f = new_flight.clone();
-        let handle = tokio::runtime::Handle::current();
-        handle.spawn(async move {
-            let flight_in_db = repo.create(&f).await.unwrap();
-            println!("{:?}", flight_in_db);
-        });
-    }
+        let err_tx = err_tx.clone();
+        match validate_flight_dto(new_flight) {
+            Ok(()) => {
+                let flight_data = new_flight.clone();
+                println!("inside tokio");
+                tokio::spawn(async move {
+                    match repo.create(&flight_data).await {
+                        Ok(flight_in_db) => println!("{:?}", flight_in_db),
+                        Err(e) => {
+                            println!("{}", e);
+                            let _ = err_tx.send(format!("Error saving flight: {}", e));
+                        }
+                    }
+                });
+            }
+            Err(e) => {
+                let _: () = err_tx.send(format!("Error saving flight: {}", e)).unwrap();
+            }
+        };
 
-    let error_text = RichText::new(&*current_err).color(Color32::RED).size(22.0);
-    ui.label(error_text);
+        *current_err = err_rx.recv().unwrap();
+    }
+}
+
+fn validate_flight_dto(flight: &FlightDTO) -> Result<(), &'static str> {
+    if flight.arr.is_empty() {
+        return Err("Arrival field is required");
+    }
+    if flight.dof.is_empty() {
+        return Err("DOF field is required");
+    }
+    if flight.dep.is_empty() {
+        return Err("Departure field is required");
+    }
+    if flight.pyld.is_empty() {
+        return Err("Payload field is required");
+    }
+    if flight.flight_number.is_empty() {
+        return Err("Flight Number field is required");
+    }
+    if flight.tail.is_empty() {
+        return Err("Tail field is required");
+    }
+    Ok(())
 }

@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::sync::{
+    Arc,
+    mpsc::{self, Receiver, Sender},
+};
 
 use eframe::{App, egui::CentralPanel};
 use sqlx::SqlitePool;
@@ -8,11 +11,26 @@ use crate::{
     scenes::Scene,
 };
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct AppData {
     pub flights: Vec<Flight>,
     pub new_flight_form: FlightDTO,
     pub current_err: String,
+    pub err_rx: Receiver<String>,
+    pub err_tx: Sender<String>,
+}
+
+impl AppData {
+    pub fn new() -> Self {
+        let (err_tx, err_rx) = mpsc::channel::<String>();
+        Self {
+            flights: Vec::new(),
+            new_flight_form: FlightDTO::default(),
+            current_err: String::new(),
+            err_rx,
+            err_tx,
+        }
+    }
 }
 
 pub struct Appl {
@@ -23,10 +41,12 @@ pub struct Appl {
 
 impl Appl {
     pub fn new(pool: Arc<SqlitePool>) -> Self {
+        // let (err_tx, err_rx) = mpsc::channel::<(String, String)>();
         Self {
             current_scene: Scene::Home,
             pool,
-            app_data: AppData::default(),
+            // app_data: AppData::default(),
+            app_data: AppData::new(),
         }
     }
 }

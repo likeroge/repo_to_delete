@@ -91,6 +91,8 @@ impl Scene {
                     &mut app_data.new_flight_form,
                     &mut app_data.current_err,
                     repo,
+                    &mut app_data.err_tx,
+                    &mut app_data.err_rx,
                 );
                 None
             }
