@@ -8,6 +8,8 @@ pub fn render_flights(ui: &mut Ui, flights: &Vec<Flight>) {
         ui.add(egui::Label::new(style::heading("All flights screen")));
     });
 
+    let mut cols = ui.columns(3, "Table");
+    cols.header().label("asd");
     ui.horizontal(|ui| {
         ui.strong("FLIGHT_NUMBER");
         ui.separator();
